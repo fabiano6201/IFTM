@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+//gerador de vetor
+void geraVetor(int vetor[], int tamanho) {
+    srand(time(NULL));
+    for (int i = 0; i < tamanho; i++) {
+        vetor[i] = rand() % 100;
+    }
+}
+
+//imprimir vetor
+void imprimirVetor(int vetor[], int tamanho) {
+    printf("Vetor: ");
+    for (int i = 0; i < tamanho; i++) {
+        printf("%d ", vetor[i]);
+    }
+    printf("\n");
+}
+
+//metodos de ordenação
+void insertionSort(int vetor[], int tamanho) {
+    for (int i = 1; i < tamanho; i++) {
+        int chave = vetor[i];
+        int j = i - 1;
+        while (j >= 0 && vetor[j] > chave) {
+            vetor[j + 1] = vetor[j];
+            j--;
+        }
+        vetor[j + 1] = chave;
+    }
+}
+
+void merge(int vetor[], int inicio, int meio, int fim) {
+    int i, j, aux;
+    int tamanhoEsq = meio - inicio + 1;
+    int tamanhoDir = fim - meio;
+
+    int vetorEsq[tamanhoEsq], vetorDir[tamanhoDir];
+
+    for (i = 0; i < tamanhoEsq; i++) {
+        vetorEsq[i] = vetor[inicio + i];
+    }
+    for (j = 0; j < tamanhoDir; j++) {
+        vetorDir[j] = vetor[meio + 1 + j];
+    }
+
+    i = 0;
+    j = 0;
+    aux = inicio;
+
+    while (i < tamanhoEsq && j < tamanhoDir) {
+        if (vetorEsq[i] <= vetorDir[j]) {
+            vetor[aux] = vetorEsq[i];
+            i++;
+        } else {
+            vetor[aux] = vetorDir[j];
+            j++;
+        }
+        aux++;
+    }
+
+    while (i < tamanhoEsq) {
+        vetor[aux] = vetorEsq[i];
+        i++;
+        aux++;
+    }
+
+    while (j < tamanhoDir) {
+        vetor[aux] = vetorDir[j];
+        j++;
+        aux++;
+    }
+}
+
+void mergeSort(int vetor[], int inicio, int fim) {
+    if (inicio < fim) {
+        int meio = inicio + (fim - inicio) / 2;
+        mergeSort(vetor, inicio, meio);
+        mergeSort(vetor, meio + 1, fim);
+        merge(vetor, inicio, meio, fim);
+    }
+}
+//metodo de busca
+int buscaSequencial(int vetor[], int tamanho, int numero) {
+    for (int i = 0; i < tamanho; i++) {
+        if (vetor[i] == numero) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int buscaBinaria(int vetor[], int tamanho, int numero) {
+    int inicio = 0;
+    int fim = tamanho - 1;
+    while (inicio <= fim) {
+        int meio = inicio + (fim - inicio) / 2;
+        if (vetor[meio] == numero) {
+            return meio;
+        }
+        if (vetor[meio] < numero) {
+            inicio = meio + 1;
+        } else {
+            fim = meio - 1;
+        }
+    }
+    return -1;
+}
+
+
+int main() {
+    int vetor[100];
+    int tamanho = 0;
+    int num = 0;
+    char opcaoOrdenacao;
+    char opcaoOrdenacao1;
+
+    printf("Qual o tamanho do vetor a ser gerado:\n");
+    scanf(" %d", &tamanho);
+    printf("o Vetor eh: ");
+    geraVetor(vetor,tamanho);
+    imprimirVetor(vetor,tamanho);
+
+
+        printf("\n\nDigite um dos item para ordenar o vetor:\n");
+        printf(" - I para insertionSort\n");
+        printf(" - M mergeSort \n");
+        printf(" - C para continuar \n");
+        scanf(" %c", &opcaoOrdenacao);
+
+        if(opcaoOrdenacao == 'M' && sizeof(vetor)>0){
+            mergeSort(vetor,0,tamanho-1);
+            imprimirVetor(vetor,tamanho);
+        }else if(opcaoOrdenacao == 'I' && sizeof(vetor)>0){
+            insertionSort(vetor,tamanho);
+            imprimirVetor(vetor,tamanho);
+        }
+
+        printf("\n\nDigite um dos item para ordenar o vetor:\n");
+        printf(" - B busca binaria\n");
+        printf(" - S busca sequencial \n");
+        scanf(" %c", &opcaoOrdenacao1);
+
+        if(opcaoOrdenacao1 == 'B' && (opcaoOrdenacao == 'M' || opcaoOrdenacao == 'I')){
+            printf("Digite o numero que deseja procurar: \n");
+            scanf("%d",&num);
+           int t = buscaBinaria(vetor,tamanho,num);
+           if(t == 0){
+                printf("\n Encontrado \n");
+           }else{
+                printf("\n Nao encontrato \n");
+           }
+        }else if(opcaoOrdenacao1 == 'S'){
+            printf("Digite o numero que deseja procurar: \n");
+            scanf("%d",&num);
+            int t = buscaSequencial(vetor,tamanho,num);
+           if(t == 0){
+                printf("\n Encontrado - %d\n",t);
+           }else{
+                printf("\n Nao encontrato - %d\n",t);
+           }
+        }else{
+              printf("\nNao eh possivel utilizar a busca binaria sem ordenar o vetor\n");
+        }
+
+
+    return 0;
+}
